@@ -2,7 +2,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  binaryTargets = ["debian-openssl-3.0.x", "linux-musl"]
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl"]
 }
 
 datasource db {
@@ -10,87 +10,95 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Usuario {
-  id                      Int              @id @default(autoincrement())
-  nomeUsuario             String           @unique
-  email                   String           @unique
-  hashSenha               String
-  urlFotoPerfil           String?          @db.VarChar(255)
-  cargo                   String           @default("usuario") // "usuario" ou "admin"
-  nivel                   Int              @default(1)
-  xp                      Int              @default(0)
-  moedas                  Int              @default(0)
-  dataCriacao             DateTime         @default(now())
+model usuarios {
+  id                      Int              @id @default(autoincrement()) @map("id")
+  nome_usuario            String           @unique @map("nome_usuario")
+  email                   String           @unique @map("email")
+  hash_senha              String           @map("hash_senha")
+  url_foto_perfil         String?          @map("url_foto_perfil") @db.VarChar(255)
+  cargo                   String           @default("usuario") @map("cargo")
+  nivel                   Int              @default(1) @map("nivel")
+  xp                      Int              @default(0) @map("xp")
+  moedas                  Int              @default(0) @map("moedas")
+  data_criacao            DateTime         @default(now()) @map("data_criacao")
   
-  posts                   Post[]           @relation("AutorPosts")
-  postsAprovados          Post[]           @relation("AdminAprovador")
-  curtidas                CurtidaPost[]
+  // Relacionamentos
+  posts_autor             posts[]          @relation("AutorPosts")
+  posts_aprovador         posts[]          @relation("AdminAprovador")
+  curtidas                curtidas_post[]
   
-  seguindo                Seguidor[]       @relation("Seguidor")
-  seguidores              Seguidor[]       @relation("Seguido")
+  seguindo_seguidor       seguidores[]     @relation("Seguidor")
+  seguidores_seguido      seguidores[]     @relation("Seguido")
+
+  @@map("usuarios")
 }
 
-model Post {
-  id                      Int              @id @default(autoincrement())
-  titulo                  String
-  urlImagem               String           @db.VarChar(255)
-  descricao               String?          @db.Text
-  status                  String           @default("pendente") // pendente, aprovado, rejeitado
-  dataCriacao             DateTime         @default(now())
-  dataAprovacao           DateTime?
+model posts {
+  id                      Int              @id @default(autoincrement()) @map("id")
+  titulo                  String           @map("titulo")
+  url_imagem              String           @map("url_imagem") @db.VarChar(255)
+  descricao               String?          @map("descricao") @db.Text
+  status                  String           @default("pendente") @map("status")
+  data_criacao            DateTime         @default(now()) @map("data_criacao")
+  data_aprovacao          DateTime?        @map("data_aprovacao")
 
-  usuarioId               Int
-  autor                   Usuario          @relation("AutorPosts", fields: [usuarioId], references: [id])
+  usuario_id              Int              @map("usuario_id")
+  autor                   usuarios         @relation("AutorPosts", fields: [usuario_id], references: [id])
   
-  aprovadoPorUsuarioId    Int?
-  adminAprovador          Usuario?         @relation("AdminAprovador", fields: [aprovadoPorUsuarioId], references: [id])
+  aprovado_por_usuario_id Int?             @map("aprovado_por_usuario_id")
+  admin_aprovador         usuarios?        @relation("AdminAprovador", fields: [aprovado_por_usuario_id], references: [id])
   
-  tags                    PostsTags[]
-  curtidas                CurtidaPost[]
+  tags                    posts_tags[]
+  curtidas                curtidas_post[]
 
-  @@index([usuarioId])
-  @@index([aprovadoPorUsuarioId])
+  @@map("posts")
+  @@index([usuario_id])
+  @@index([aprovado_por_usuario_id])
 }
 
-model Tag {
-  id                      Int              @id @default(autoincrement())
-  nome                    String           @unique
+model tags {
+  id                      Int              @id @default(autoincrement()) @map("id")
+  nome                    String           @unique @map("nome")
   
-  posts                   PostsTags[]
+  posts                   posts_tags[]
+
+  @@map("tags")
 }
 
-model PostsTags {
-  post                    Post             @relation(fields: [postId], references: [id])
-  postId                  Int
-  tag                     Tag              @relation(fields: [tagId], references: [id])
-  tagId                   Int
+model posts_tags {
+  post_id                 Int              @map("post_id")
+  tag_id                  Int              @map("tag_id")
+  
+  post                    posts            @relation(fields: [post_id], references: [id])
+  tag                     tags             @relation(fields: [tag_id], references: [id])
 
-  @@id([postId, tagId])
-  @@index([tagId])
+  @@id([post_id, tag_id])
+  @@index([tag_id])
+  @@map("posts_tags")
 }
 
-model Seguidor {
-  seguidorUsuarioId       Int
-  seguidor                Usuario          @relation("Seguidor", fields: [seguidorUsuarioId], references: [id])
-  
-  seguidoUsuarioId        Int
-  seguido                 Usuario          @relation("Seguido", fields: [seguidoUsuarioId], references: [id])
-  
-  dataCriacao             DateTime         @default(now())
+model seguidores {
+  seguidor_usuario_id     Int              @map("seguidor_usuario_id")
+  seguido_usuario_id      Int              @map("seguido_usuario_id")
+  data_criacao            DateTime         @default(now()) @map("data_criacao")
 
-  @@id([seguidorUsuarioId, seguidoUsuarioId])
-  @@index([seguidoUsuarioId])
+  seguidor                usuarios         @relation("Seguidor", fields: [seguidor_usuario_id], references: [id])
+  seguido                 usuarios         @relation("Seguido", fields: [seguido_usuario_id], references: [id])
+
+  @@id([seguidor_usuario_id, seguido_usuario_id])
+  @@index([seguido_usuario_id])
+  @@map("seguidores")
 }
 
-model CurtidaPost {
-  usuarioId               Int
-  usuario                 Usuario          @relation(fields: [usuarioId], references: [id])
-  
-  postId                  Int
-  post                    Post             @relation(fields: [postId], references: [id])
-  
-  dataCriacao             DateTime         @default(now())
-  
-  @@id([usuarioId, postId])
-  @@index([postId])
+model curtidas_post {
+  usuario_id              Int              @map("usuario_id")
+  post_id                 Int              @map("post_id")
+  data_criacao            DateTime         @default(now()) @map("data_criacao")
+
+  usuario                 usuarios         @relation(fields: [usuario_id], references: [id])
+  post                    posts            @relation(fields: [post_id], references: [id])
+
+  @@id([usuario_id, post_id])
+  @@index([post_id])
+  @@map("curtidas_post")
 }

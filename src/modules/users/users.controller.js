@@ -3,7 +3,7 @@ const prisma = require('../../services/prisma.client');
 const usersController = {
     async getMe(req, res) {
         try {
-            const usuario = await prisma.usuario.findUnique({
+            const usuario = await prisma.usuarios.findUnique({
                 where: { id: req.usuarioLogado.id },
                 select: {
                     id: true,
@@ -36,7 +36,7 @@ const usersController = {
         try {
             const userId = parseInt(req.params.id);
 
-            const usuario = await prisma.usuario.findUnique({
+            const usuario = await prisma.usuarios.findUnique({
                 where: { id: userId },
                 select: {
                     id: true,
@@ -80,7 +80,7 @@ const usersController = {
                 return res.status(400).json({ error: 'Não é possível seguir a si mesmo' });
             }
 
-            const usuarioParaSeguir = await prisma.usuario.findUnique({
+            const usuarioParaSeguir = await prisma.usuarios.findUnique({
                 where: { id: userIdToFollow }
             });
 
@@ -88,7 +88,7 @@ const usersController = {
                 return res.status(404).json({ error: 'Usuário não encontrado' });
             }
 
-            const jaSeguindo = await prisma.seguidor.findUnique({
+            const jaSeguindo = await prisma.seguidores.findUnique({
                 where: {
                     seguidorUsuarioId_seguidoUsuarioId: {
                         seguidorUsuarioId: currentUserId,
@@ -101,7 +101,7 @@ const usersController = {
                 return res.status(400).json({ error: 'Você já segue este usuário' });
             }
 
-            await prisma.seguidor.create({
+            await prisma.seguidores.create({
                 data: {
                     seguidorUsuarioId: currentUserId,
                     seguidoUsuarioId: userIdToFollow
@@ -120,7 +120,7 @@ const usersController = {
             const userIdToUnfollow = parseInt(req.params.id);
             const currentUserId = req.usuarioLogado.id;
 
-            const seguindo = await prisma.seguidor.findUnique({
+            const seguindo = await prisma.seguidores.findUnique({
                 where: {
                     seguidorUsuarioId_seguidoUsuarioId: {
                         seguidorUsuarioId: currentUserId,
@@ -133,7 +133,7 @@ const usersController = {
                 return res.status(400).json({ error: 'Você não segue este usuário' });
             }
 
-            await prisma.seguidor.delete({
+            await prisma.seguidores.delete({
                 where: {
                     seguidorUsuarioId_seguidoUsuarioId: {
                         seguidorUsuarioId: currentUserId,

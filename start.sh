@@ -1,12 +1,11 @@
 #!/bin/bash
-export PRISMA_CLI_BINARY_TARGETS=debian-openssl-3.0.x
-export PRISMA_QUERY_ENGINE_BINARY=debian-openssl-3.0.x
 
 # Garanta que todas as dependências estejam instaladas
 npm install
 
-# Gere o cliente
+# Gere o cliente (em um ambiente limpo, sem a variável)
 npx prisma generate
 
-# Execute
-npm run dev
+# Execute o servidor, passando a variável de ambiente APENAS para este comando.
+# Isso evita "poluir" o terminal.
+PRISMA_QUERY_ENGINE_LIBRARY="./node_modules/.prisma/client/libquery_engine-debian-openssl-3.0.x.so.node" npm run dev

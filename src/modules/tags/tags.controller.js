@@ -3,7 +3,7 @@ const prisma = require('../../services/prisma.client');
 const tagsController = {
     async getAllTags(req, res) {
         try {
-            const tags = await prisma.tag.findMany({
+            const tags = await prisma.tags.findMany({
                 include: {
                     _count: {
                         select: {
@@ -27,7 +27,7 @@ const tagsController = {
         try {
             const tagNome = req.params.nome;
 
-            const posts = await prisma.post.findMany({
+            const posts = await prisma.posts.findMany({
                 where: {
                     status: 'aprovado',
                     tags: {

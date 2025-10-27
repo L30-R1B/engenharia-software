@@ -11,7 +11,7 @@ const authController = {
                 return res.status(400).json({ error: 'Nome de usuário, email e senha são obrigatórios' });
             }
 
-            const usuarioExistente = await prisma.usuario.findFirst({
+            const usuarioExistente = await prisma.usuarios.findFirst({
                 where: {
                     OR: [
                         { nomeUsuario },
@@ -26,7 +26,7 @@ const authController = {
 
             const hashSenha = await bcrypt.hash(senha, 12);
 
-            const novoUsuario = await prisma.usuario.create({
+            const novoUsuario = await prisma.usuarios.create({
                 data: {
                     nomeUsuario,
                     email,
@@ -71,7 +71,7 @@ const authController = {
                 return res.status(400).json({ error: 'Email e senha são obrigatórios' });
             }
 
-            const usuario = await prisma.usuario.findUnique({
+            const usuario = await prisma.usuarios.findUnique({
                 where: { email }
             });
 

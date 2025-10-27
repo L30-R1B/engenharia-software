@@ -13,7 +13,7 @@ const verifyToken = async(req, res, next) => {
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'seu_jwt_secret');
 
-        const usuario = await prisma.usuario.findUnique({
+        const usuario = await prisma.usuarios.findUnique({
             where: { id: decoded.id },
             select: {
                 id: true,

@@ -10,7 +10,7 @@ const postsController = {
                 return res.status(400).json({ error: 'Título e URL da imagem são obrigatórios' });
             }
 
-            const novoPost = await prisma.post.create({
+            const novoPost = await prisma.posts.create({
                 data: {
                     titulo,
                     urlImagem,
@@ -48,7 +48,7 @@ const postsController = {
 
     async getPosts(req, res) {
         try {
-            const posts = await prisma.post.findMany({
+            const posts = await prisma.posts.findMany({
                 where: { status: 'aprovado' },
                 include: {
                     autor: {
@@ -85,7 +85,7 @@ const postsController = {
         try {
             const postId = parseInt(req.params.id);
 
-            const post = await prisma.post.findFirst({
+            const post = await prisma.posts.findFirst({
                 where: {
                     id: postId,
                     status: 'aprovado'
@@ -127,7 +127,7 @@ const postsController = {
             const postId = parseInt(req.params.id);
             const usuarioId = req.usuarioLogado.id;
 
-            const post = await prisma.post.findUnique({
+            const post = await prisma.posts.findUnique({
                 where: { id: postId }
             });
 
@@ -135,7 +135,7 @@ const postsController = {
                 return res.status(404).json({ error: 'Post não encontrado' });
             }
 
-            const curtidaExistente = await prisma.curtidaPost.findUnique({
+            const curtidaExistente = await prisma.curtidas_post.findUnique({
                 where: {
                     usuarioId_postId: {
                         usuarioId,
@@ -145,7 +145,7 @@ const postsController = {
             });
 
             if (curtidaExistente) {
-                await prisma.curtidaPost.delete({
+                await prisma.curtidas_post.delete({
                     where: {
                         usuarioId_postId: {
                             usuarioId,
@@ -155,7 +155,7 @@ const postsController = {
                 });
                 return res.json({ message: 'Like removido', liked: false });
             } else {
-                await prisma.curtidaPost.create({
+                await prisma.curtidas_post.create({
                     data: {
                         usuarioId,
                         postId
@@ -179,7 +179,7 @@ const postsController = {
                 return res.status(400).json({ error: 'Tags deve ser um array' });
             }
 
-            const post = await prisma.post.findUnique({
+            const post = await prisma.posts.findUnique({
                 where: { id: postId }
             });
 
@@ -191,22 +191,22 @@ const postsController = {
                 return res.status(403).json({ error: 'Apenas o autor pode editar as tags do post' });
             }
 
-            await prisma.postsTags.deleteMany({
+            await prisma.posts_tags.deleteMany({
                 where: { postId }
             });
 
             for (const tagNome of tags) {
-                let tag = await prisma.tag.findUnique({
+                let tag = await prisma.tags.findUnique({
                     where: { nome: tagNome }
                 });
 
                 if (!tag) {
-                    tag = await prisma.tag.create({
+                    tag = await prisma.tags.create({
                         data: { nome: tagNome }
                     });
                 }
 
-                await prisma.postsTags.create({
+                await prisma.posts_tags.create({
                     data: {
                         postId,
                         tagId: tag.id
@@ -214,7 +214,7 @@ const postsController = {
                 });
             }
 
-            const postAtualizado = await prisma.post.findUnique({
+            const postAtualizado = await prisma.posts.findUnique({
                 where: { id: postId },
                 include: {
                     tags: {

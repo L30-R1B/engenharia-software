@@ -3,7 +3,7 @@ const prisma = require('../../services/prisma.client');
 const adminController = {
     async getPendingPosts(req, res) {
         try {
-            const posts = await prisma.post.findMany({
+            const posts = await prisma.posts.findMany({
                 where: { status: 'pendente' },
                 include: {
                     autor: {
@@ -41,7 +41,7 @@ const adminController = {
             const postId = parseInt(req.params.id);
             const adminId = req.usuarioLogado.id;
 
-            const post = await prisma.post.findUnique({
+            const post = await prisma.posts.findUnique({
                 where: { id: postId }
             });
 
@@ -49,7 +49,7 @@ const adminController = {
                 return res.status(404).json({ error: 'Post não encontrado' });
             }
 
-            const postAtualizado = await prisma.post.update({
+            const postAtualizado = await prisma.posts.update({
                 where: { id: postId },
                 data: {
                     status: 'aprovado',
@@ -83,7 +83,7 @@ const adminController = {
         try {
             const postId = parseInt(req.params.id);
 
-            const post = await prisma.post.findUnique({
+            const post = await prisma.posts.findUnique({
                 where: { id: postId }
             });
 
@@ -91,7 +91,7 @@ const adminController = {
                 return res.status(404).json({ error: 'Post não encontrado' });
             }
 
-            const postAtualizado = await prisma.post.update({
+            const postAtualizado = await prisma.posts.update({
                 where: { id: postId },
                 data: {
                     status: 'rejeitado'
@@ -109,7 +109,7 @@ const adminController = {
         try {
             const postId = parseInt(req.params.id);
 
-            const post = await prisma.post.findUnique({
+            const post = await prisma.posts.findUnique({
                 where: { id: postId }
             });
 
@@ -117,7 +117,7 @@ const adminController = {
                 return res.status(404).json({ error: 'Post não encontrado' });
             }
 
-            await prisma.post.delete({
+            await prisma.posts.delete({
                 where: { id: postId }
             });
 
@@ -132,7 +132,7 @@ const adminController = {
         try {
             const userId = parseInt(req.params.id);
 
-            const usuario = await prisma.usuario.findUnique({
+            const usuario = await prisma.usuarios.findUnique({
                 where: { id: userId }
             });
 
@@ -144,7 +144,7 @@ const adminController = {
                 return res.status(400).json({ error: 'Não é possível deletar um administrador' });
             }
 
-            await prisma.usuario.delete({
+            await prisma.usuarios.delete({
                 where: { id: userId }
             });
 
