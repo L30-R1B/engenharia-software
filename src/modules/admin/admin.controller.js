@@ -9,8 +9,8 @@ const adminController = {
                     autor: {
                         select: {
                             id: true,
-                            nomeUsuario: true,
-                            urlFotoPerfil: true
+                            nome_usuario: true,
+                            url_foto_perfil: true
                         }
                     },
                     tags: {
@@ -25,7 +25,7 @@ const adminController = {
                     }
                 },
                 orderBy: {
-                    dataCriacao: 'desc'
+                    data_criacao: 'desc'
                 }
             });
 
@@ -53,15 +53,15 @@ const adminController = {
                 where: { id: postId },
                 data: {
                     status: 'aprovado',
-                    aprovadoPorUsuarioId: adminId,
-                    dataAprovacao: new Date()
+                    aprovado_por_usuario_id: adminId,
+                    data_aprovacao: new Date()
                 },
                 include: {
                     autor: {
                         select: {
                             id: true,
-                            nomeUsuario: true,
-                            urlFotoPerfil: true
+                            nome_usuario: true,
+                            url_foto_perfil: true
                         }
                     },
                     tags: {

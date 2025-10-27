@@ -17,13 +17,13 @@ const verifyToken = async(req, res, next) => {
             where: { id: decoded.id },
             select: {
                 id: true,
-                nomeUsuario: true,
+                nome_usuario: true,
                 email: true,
                 cargo: true,
                 nivel: true,
                 xp: true,
                 moedas: true,
-                urlFotoPerfil: true
+                url_foto_perfil: true
             }
         });
 

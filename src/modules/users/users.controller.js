@@ -7,14 +7,14 @@ const usersController = {
                 where: { id: req.usuarioLogado.id },
                 select: {
                     id: true,
-                    nomeUsuario: true,
+                    nome_usuario: true,
                     email: true,
-                    urlFotoPerfil: true,
+                    url_foto_perfil: true,
                     cargo: true,
                     nivel: true,
                     xp: true,
                     moedas: true,
-                    dataCriacao: true,
+                    data_criacao: true,
                     _count: {
                         select: {
                             seguidores: true,
@@ -40,12 +40,12 @@ const usersController = {
                 where: { id: userId },
                 select: {
                     id: true,
-                    nomeUsuario: true,
-                    urlFotoPerfil: true,
+                    nome_usuario: true,
+                    url_foto_perfil: true,
                     nivel: true,
                     xp: true,
                     moedas: true,
-                    dataCriacao: true,
+                    data_criacao: true,
                     _count: {
                         select: {
                             seguidores: true,
@@ -90,9 +90,9 @@ const usersController = {
 
             const jaSeguindo = await prisma.seguidores.findUnique({
                 where: {
-                    seguidorUsuarioId_seguidoUsuarioId: {
-                        seguidorUsuarioId: currentUserId,
-                        seguidoUsuarioId: userIdToFollow
+                    seguidorUsuarioId_seguido_usuario_id: {
+                        seguidor_usuario_id: currentUserId,
+                        seguido_usuario_id: userIdToFollow
                     }
                 }
             });
@@ -103,8 +103,8 @@ const usersController = {
 
             await prisma.seguidores.create({
                 data: {
-                    seguidorUsuarioId: currentUserId,
-                    seguidoUsuarioId: userIdToFollow
+                    seguidor_usuario_id: currentUserId,
+                    seguido_usuario_id: userIdToFollow
                 }
             });
 
@@ -122,9 +122,9 @@ const usersController = {
 
             const seguindo = await prisma.seguidores.findUnique({
                 where: {
-                    seguidorUsuarioId_seguidoUsuarioId: {
-                        seguidorUsuarioId: currentUserId,
-                        seguidoUsuarioId: userIdToUnfollow
+                    seguidorUsuarioId_seguido_usuario_id: {
+                        seguidor_usuario_id: currentUserId,
+                        seguido_usuario_id: userIdToUnfollow
                     }
                 }
             });
@@ -135,9 +135,9 @@ const usersController = {
 
             await prisma.seguidores.delete({
                 where: {
-                    seguidorUsuarioId_seguidoUsuarioId: {
-                        seguidorUsuarioId: currentUserId,
-                        seguidoUsuarioId: userIdToUnfollow
+                    seguidorUsuarioId_seguido_usuario_id: {
+                        seguidor_usuario_id: currentUserId,
+                        seguido_usuario_id: userIdToUnfollow
                     }
                 }
             });

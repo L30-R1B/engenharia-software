@@ -42,8 +42,8 @@ const tagsController = {
                     autor: {
                         select: {
                             id: true,
-                            nomeUsuario: true,
-                            urlFotoPerfil: true
+                            nome_usuario: true,
+                            url_foto_perfil: true
                         }
                     },
                     tags: {
@@ -58,7 +58,7 @@ const tagsController = {
                     }
                 },
                 orderBy: {
-                    dataCriacao: 'desc'
+                    data_criacao: 'desc'
                 }
             });
 

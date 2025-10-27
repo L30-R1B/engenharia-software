@@ -22,8 +22,8 @@ const postsController = {
                     autor: {
                         select: {
                             id: true,
-                            nomeUsuario: true,
-                            urlFotoPerfil: true
+                            nome_usuario: true,
+                            url_foto_perfil: true
                         }
                     },
                     tags: {
@@ -54,8 +54,8 @@ const postsController = {
                     autor: {
                         select: {
                             id: true,
-                            nomeUsuario: true,
-                            urlFotoPerfil: true
+                            nome_usuario: true,
+                            url_foto_perfil: true
                         }
                     },
                     tags: {
@@ -70,7 +70,7 @@ const postsController = {
                     }
                 },
                 orderBy: {
-                    dataCriacao: 'desc'
+                    data_criacao: 'desc'
                 }
             });
 
@@ -94,8 +94,8 @@ const postsController = {
                     autor: {
                         select: {
                             id: true,
-                            nomeUsuario: true,
-                            urlFotoPerfil: true
+                            nome_usuario: true,
+                            url_foto_perfil: true
                         }
                     },
                     tags: {

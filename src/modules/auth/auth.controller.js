@@ -38,13 +38,13 @@ const authController = {
                 },
                 select: {
                     id: true,
-                    nomeUsuario: true,
+                    nome_usuario: true,
                     email: true,
                     cargo: true,
                     nivel: true,
                     xp: true,
                     moedas: true,
-                    dataCriacao: true
+                    data_criacao: true
                 }
             });
 
