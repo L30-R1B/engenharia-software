@@ -1,0 +1,96 @@
+// Arquivo: prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-musl"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id                      Int              @id @default(autoincrement())
+  nomeUsuario             String           @unique
+  email                   String           @unique
+  hashSenha               String
+  urlFotoPerfil           String?          @db.VarChar(255)
+  cargo                   String           @default("usuario") // "usuario" ou "admin"
+  nivel                   Int              @default(1)
+  xp                      Int              @default(0)
+  moedas                  Int              @default(0)
+  dataCriacao             DateTime         @default(now())
+  
+  posts                   Post[]           @relation("AutorPosts")
+  postsAprovados          Post[]           @relation("AdminAprovador")
+  curtidas                CurtidaPost[]
+  
+  seguindo                Seguidor[]       @relation("Seguidor")
+  seguidores              Seguidor[]       @relation("Seguido")
+}
+
+model Post {
+  id                      Int              @id @default(autoincrement())
+  titulo                  String
+  urlImagem               String           @db.VarChar(255)
+  descricao               String?          @db.Text
+  status                  String           @default("pendente") // pendente, aprovado, rejeitado
+  dataCriacao             DateTime         @default(now())
+  dataAprovacao           DateTime?
+
+  usuarioId               Int
+  autor                   Usuario          @relation("AutorPosts", fields: [usuarioId], references: [id])
+  
+  aprovadoPorUsuarioId    Int?
+  adminAprovador          Usuario?         @relation("AdminAprovador", fields: [aprovadoPorUsuarioId], references: [id])
+  
+  tags                    PostsTags[]
+  curtidas                CurtidaPost[]
+
+  @@index([usuarioId])
+  @@index([aprovadoPorUsuarioId])
+}
+
+model Tag {
+  id                      Int              @id @default(autoincrement())
+  nome                    String           @unique
+  
+  posts                   PostsTags[]
+}
+
+model PostsTags {
+  post                    Post             @relation(fields: [postId], references: [id])
+  postId                  Int
+  tag                     Tag              @relation(fields: [tagId], references: [id])
+  tagId                   Int
+
+  @@id([postId, tagId])
+  @@index([tagId])
+}
+
+model Seguidor {
+  seguidorUsuarioId       Int
+  seguidor                Usuario          @relation("Seguidor", fields: [seguidorUsuarioId], references: [id])
+  
+  seguidoUsuarioId        Int
+  seguido                 Usuario          @relation("Seguido", fields: [seguidoUsuarioId], references: [id])
+  
+  dataCriacao             DateTime         @default(now())
+
+  @@id([seguidorUsuarioId, seguidoUsuarioId])
+  @@index([seguidoUsuarioId])
+}
+
+model CurtidaPost {
+  usuarioId               Int
+  usuario                 Usuario          @relation(fields: [usuarioId], references: [id])
+  
+  postId                  Int
+  post                    Post             @relation(fields: [postId], references: [id])
+  
+  dataCriacao             DateTime         @default(now())
+  
+  @@id([usuarioId, postId])
+  @@index([postId])
+}
