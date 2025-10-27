@@ -14,7 +14,7 @@ const authController = {
             const usuarioExistente = await prisma.usuarios.findFirst({
                 where: {
                     OR: [
-                        { nomeUsuario },
+                        { nome_usuario: nomeUsuario }, // <-- CORRIGIDO
                         { email }
                     ]
                 }
@@ -28,9 +28,9 @@ const authController = {
 
             const novoUsuario = await prisma.usuarios.create({
                 data: {
-                    nomeUsuario,
+                    nome_usuario: nomeUsuario, // <-- CORRIGIDO
                     email,
-                    hashSenha,
+                    hash_senha: hashSenha, // <-- CORRIGIDO
                     cargo: 'usuario',
                     nivel: 1,
                     xp: 0,
@@ -79,7 +79,7 @@ const authController = {
                 return res.status(401).json({ error: 'Credenciais inválidas' });
             }
 
-            const senhaValida = await bcrypt.compare(senha, usuario.hashSenha);
+            const senhaValida = await bcrypt.compare(senha, usuario.hash_senha); // <-- CORRIGIDO (baseado no schema)
 
             if (!senhaValida) {
                 return res.status(401).json({ error: 'Credenciais inválidas' });
@@ -89,7 +89,7 @@ const authController = {
                 process.env.JWT_SECRET || 'seu_jwt_secret', { expiresIn: '7d' }
             );
 
-            const { hashSenha, ...usuarioSemSenha } = usuario;
+            const { hash_senha, ...usuarioSemSenha } = usuario; // <-- CORRIGIDO (baseado no schema)
 
             res.json({
                 message: 'Login realizado com sucesso',
